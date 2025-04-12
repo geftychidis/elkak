@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ΕΛΚΑΚ - Πίνακας Προσκλήσεων και Διαβουλεύσεων</title>
+    <style>
+        :root {
+            --primary: #0d47a1;
+            --secondary: #1976d2;
+            --light: #e3f2fd;
+            --dark: #0c2340;
+            --accent: #ff6d00;
+            --success: #1b5e20;
+            --warning: #ff6d00;
+            --danger: #b71c1c;
+            --gray: #e0e0e0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 95%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            overflow: hidden;
+            background-color: var(--light);
+        }
+        
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            background-color: var(--light);
+            border: none;
+            transition: background-color 0.3s;
+        }
+        
+        .tab.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        /* Tab content */
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Dashboard */
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .card {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card h3 {
+            color: var(--primary);
+            font-size: 1rem;
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--light);
+            padding-bottom: 5px;
+        }
+        
+        .card .value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--dark);
+            text-align: center;
+            margin: 10px 0;
+        }
+        
+        .budget-chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 250px;
+            margin-top: 20px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chart-bar {
+            width: 60px;
+            border-radius: 5px 5px 0 0;
+            text-align: center;
+            position: relative;
+            transition: height 0.5s;
+        }
+        
+        .chart-bar-label {
+            position: absolute;
+            bottom: -30px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+        
+        .chart-bar-value {
+            position: absolute;
+            top: -25px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        /* Timeline */
+        .timeline {
+            position: relative;
+            margin: 40px 0;
+            padding-top: 30px;
+        }
+        
+        .timeline-line {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background-color: var(--gray);
+            z-index: 1;
+        }
+        
+        .timeline-events {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .timeline-event {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .timeline-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            margin: 0 auto 10px;
+            cursor: pointer;
+        }
+        
+        .timeline-date {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .timeline-title {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        /* Projects */
+        .project-filter {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .filter-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: var(--light);
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        
+        .filter-btn.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .project {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .project-header {
+            color: white;
+            padding: 15px;
+        }
+        
+        .project-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+        
+        .project-body {
+            padding: 15px;
+        }
+        
+        .project-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .info-item {
+            margin-bottom: 8px;
+        }
+        
+        .info-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 2px;
+        }
+        
+        .info-value {
+            font-weight: bold;
+        }
+        
+        .project-tech {
+            border-top: 1px solid var(--light);
+            padding-top: 15px;
+        }
+        
+        .project-tech h4 {
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+        
+        .project-tech ul {
+            padding-left: 20px;
+        }
+        
+        .project-tech li {
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        /* Details */
+        .details-selector {
+            margin-bottom: 20px;
+        }
+        
+        .details-select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid var(--gray);
+        }
+        
+        .project-details {
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .details-header {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light);
+        }
+        
+        .details-section {
+            margin-bottom: 20px;
+        }
+        
+        .details-section h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .details-item {
+            background-color: var(--light);
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .details-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        /* Types styling */
+        .type-eoi {
+            background-color: var(--primary);
+        }
+        
+        .type-rfi {
+            background-color: var(--warning);
+        }
+        
+        .type-consultation {
+            background-color: var(--success);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+                border-radius: 5px;
+            }
+            
+            .summary-cards {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .timeline-events {
+                flex-wrap: wrap;
+            }
+            
+            .timeline-event {
+                flex-basis: 50%;
+                margin-bottom: 20px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>ΕΛΚΑΚ - Προσκλήσεις & Διαβουλεύσεις</h1>
+            <p>Συνοπτική παρουσίαση ενεργών προσκλήσεων και διαβουλεύσεων</p>
+        </header>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="openTab('overview')">Επισκόπηση</button>
+            <button class="tab" onclick="openTab('timeline')">Χρονοδιάγραμμα</button>
+            <button class="tab" onclick="openTab('projects')">Προσκλήσεις</button>
+            <button class="tab" onclick="openTab('details')">Αναλυτικές Πληροφορίες</button>
+        </div>
+        
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content active">
+            <div class="summary-cards">
+                <div class="card">
+                    <h3>Συνολικός Προϋπολογισμός</h3>
+                    <div class="value">38,9 εκ. €</div>
+                </div>
+                <div class="card">
+                    <h3>Ανοιχτές Προσκλήσεις</h3>
+                    <div class="value">5</div>
+                </div>
+                <div class="card">
+                    <h3>Υψηλότερο Έργο</h3>
+                    <div class="value">24 εκ. €</div>
+                </div>
+                <div class="card">
+                    <h3>Επόμενη Προθεσμία</h3>
+                    <div class="value">15/04</div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>Κατανομή Προϋπολογισμών</h3>
+                <div class="budget-chart">
+                    <div class="chart-bar type-eoi" style="height: 120px;">
+                        <div class="chart-bar-value">12 εκ. €</div>
+                        <div class="chart-bar-label">USVs</div>
+                    </div>
+                    <div class="chart-bar type-eoi" style="height: 14px;">
+                        <div class="chart-bar-value">1,4 εκ. €</div>
+                        <div class="chart-bar-label">ΣΔΜ</div>
+                    </div>
+                    <div class="chart-bar type-eoi" style="height: 15px;">
+                        <div class="chart-bar-value">1,5 εκ. €</div>
+                        <div class="chart-bar-label">ΑΣΜΥ</div>
+                    </div>
+                    <div class="chart-bar type-rfi" style="height: 5px;">
+                        <div class="chart-bar-value">RFI</div>
+                        <div class="chart-bar-label">Επιτήρηση</div>
+                    </div>
+                    <div class="chart-bar type-eoi" style="height: 240px;">
+                        <div class="chart-bar-value">24 εκ. €</div>
+                        <div class="chart-bar-label">UAV</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Timeline Tab -->
+        <div id="timeline" class="tab-content">
+            <div class="timeline">
+                <h3>Χρονοδιάγραμμα Προθεσμιών</h3>
+                <div class="timeline-line"></div>
+                <div class="timeline-events">
+                    <div class="timeline-event">
+                        <div class="timeline-dot" onclick="showProjectDetails('01-2025')"></div>
+                        <div class="timeline-date">15/04/2025</div>
+                        <div class="timeline-title">Μη Επανδρωμένα Θαλάσσια Σκάφη</div>
+                    </div>
+                    <div class="timeline-event">
+                        <div class="timeline-dot" onclick="showProjectDetails('02-2025')"></div>
+                        <div class="timeline-date">15/04/2025</div>
+                        <div class="timeline-title">Σύστημα Διαχείρισης Μάχης</div>
+                    </div>
+                    <div class="timeline-event">
+                        <div class="timeline-dot" onclick="showProjectDetails('03-2025')"></div>
+                        <div class="timeline-date">09/05/2025</div>
+                        <div class="timeline-title">Σύστημα Περιορισμού Υπερτάσεων</div>
+                    </div>
+                    <div class="timeline-event">
+                        <div class="timeline-dot" onclick="showProjectDetails('rfi-2025')"></div>
+                        <div class="timeline-date">15/05/2025</div>
+                        <div class="timeline-title">RFI: Εναέρια & Θαλάσσια Επιτήρηση</div>
+                    </div>
+                    <div class="timeline-event">
+                        <div class="timeline-dot" onclick="showProjectDetails('04-2025')"></div>
+                        <div class="timeline-date">26/05/2025</div>
+                        <div class="timeline-title">UAV Μεταφοράς Φορτίου</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>Σημαντικές Ημερομηνίες</h3>
+                <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                    <tr style="border-bottom: 1px solid var(--light);">
+                        <th style="padding: 10px; text-align: left;">Ημερομηνία</th>
+                        <th style="padding: 10px; text-align: left;">Πρόσκληση</th>
+                        <th style="padding: 10px; text-align: left;">Προϋπολογισμός</th>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--light);">
+                        <td style="padding: 10px;">15/04/2025, 10:30</td>
+                        <td style="padding: 10px;">Μη Επανδρωμένα Θαλάσσια Σκάφη (01/2025)</td>
+                        <td style="padding: 10px;">12.000.000 €</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--light);">
+                        <td style="padding: 10px;">15/04/2025, 10:30</td>
+                        <td style="padding: 10px;">Σύστημα Διαχείρισης Μάχης (02/2025)</td>
+                        <td style="padding: 10px;">1.400.000 €</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--light);">
+                        <td style="padding: 10px;">09/05/2025, 10:30</td>
+                        <td style="padding: 10px;">Σύστημα Περιορισμού Υπερτάσεων (03/2025)</td>
+                        <td style="padding: 10px;">1.500.000 €</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--light);">
+                        <td style="padding: 10px;">≈ Μέσα Μαΐου 2025</td>
+                        <td style="padding: 10px;">RFI: Εναέρια & Θαλάσσια Επιτήρηση</td>
+                        <td style="padding: 10px;">-</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px;">26/05/2025, 10:30</td>
+                        <td style="padding: 10px;">UAV Μεταφοράς Φορτίου (04/2025)</td>
+                        <td style="padding: 10px;">24.000.000 €</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Projects Tab -->
+        <div id="projects" class="tab-content">
+            <div class="project-filter">
+                <button class="filter-btn active" onclick="filterProjects('all')">Όλες</button>
+                <button class="filter-btn" onclick="filterProjects('eoi')">Εκδήλωση Ενδιαφέροντος</button>
+                <button class="filter-btn" onclick="filterProjects('rfi')">Προκαταρκτικές Διαβουλεύσεις</button>
+                <button class="filter-btn" onclick="filterProjects('consultation')">Ανοικτή Διαβούλευση</button>
+            </div>
+            
+            <div class="projects-grid">
+                <!-- 01/2025: Μη Επανδρωμένα Θαλάσσια Σκάφη -->
+                <div class="project" data-type="eoi">
+                    <div class="project-header type-eoi">
+                        <h3>01/2025: Μη Επανδρωμένα Θαλάσσια Σκάφη</h3>
+                    </div>
+                    <div class="project-body">
+                        <div class="project-info">
+                            <div class="info-item">
+                                <div class="info-label">Προϋπολογισμός</div>
+                                <div class="info-value">12.000.000 €</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Προθεσμία</div>
+                                <div class="info-value">15/04/2025</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Τύπος</div>
+                                <div class="info-value">Εκδήλωση Ενδιαφέροντος</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Διαδικασία</div>
+                                <div class="info-value">Ανταγωνιστικός Διάλογος</div>
+                            </div>
+                        </div>
+                        <div class="project-tech">
+                            <h4>Βασικές Τεχνικές Απαιτήσεις</h4>
+                            <ul>
+                                <li>Υψηλή αυτονομία</li>
+                                <li>Ταχύτητα έως 40–50 κόμβους</li>
+                                <li>Υβριδικό/ντίζελ σύστημα πρόωσης</li>
+                                <li>Αρθρωτή σχεδίαση για εναλλάξιμα φορτία</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 02/2025: Σύστημα Διαχείρισης Μάχης -->
+                <div class="project" data-type="eoi">
+                    <div class="project-header type-eoi">
+                        <h3>02/2025: Σύστημα Διαχείρισης Μάχης</h3>
+                    </div>
+                    <div class="project-body">
+                        <div class="project-info">
+                            <div class="info-item">
+                                <div class="info-label">Προϋπολογισμός</div>
+                                <div class="info-value">1.400.000 €</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Προθεσμία</div>
+                                <div class="info-value">15/04/2025</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Τύπος</div>
+                                <div class="info-value">Εκδήλωση Ενδιαφέροντος</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">TRL</div>
+                                <div class="info-value">Από 5 σε 9</div>
+                            </div>
+                        </div>
+                        <div class="project-tech">
+                            <h4>Βασικές Τεχνικές Απαιτήσεις</h4>
+                            <ul>
+                                <li>Σχεδίαση/ανάπτυξη ολοκληρωμένου συστήματος</li>
+                                <li>Ενοποίηση και διαχείριση δεδομένων από αισθητήρες</li>
+                                <li>Ενσωμάτωση όπλων και επικοινωνιών</li>
+                                <li>Για πολεμικά πλοία</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 03/2025: Ενεργό Σύστημα Περιορισμού Μεταβατικών Υπερτάσεων -->
+                <div class="project" data-type="eoi">
+                    <div class="project-header type-eoi">
+                        <h3>03/2025: Σύστημα Περιορισμού Υπερτάσεων</h3>
+                    </div>
+                    <div class="project-body">
+                        <div class="project-info">
+                            <div class="info-item">
+                                <div class="info-label">Προϋπολογισμός</div>
+                                <div class="info-value">1.500.000 €</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Προθεσμία</div>
+                                <div class="info-value">09/05/2025</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Τύπος</div>
+                                <div class="info-value">Εκδήλωση Ενδιαφέροντος</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">TRL</div>
+                                <div class="info-value">Από 5 σε 9</div>
+                            </div>
+                        </div>
+                        <div class="project-tech">
+                            <h4>Βασικές Τεχνικές Απαιτήσεις</h4>
+                            <ul>
+                                <li>Προστασία ηλεκτρικού δικτύου πολεμικών πλοίων</li>
+                                <li>Διαχείριση κρουστικών και προσωρινών υπερτάσεων</li>
+                                <li>Πρόσκτηση τριών προβιομηχανικών πρωτοτύπων</li>
+                                <li>Εγκατάσταση σε διάφορους τύπους πλοίων</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- RFI: Συστήματα Εναέριας & Θαλάσσιας Επιτήρησης -->
+                <div class="project" data-type="rfi">
+                    <div class="project-header type-rfi">
+                        <h3>RFI: Εναέρια & Θαλάσσια Επιτήρηση</h3>
+                    </div>
+                    <div class="project-body">
+                        <div class="project-info">
+                            <div class="info-item">
+                                <div class="info-label">Κωδικός</div>
+                                <div class="info-value">01/2025 & 02/2025</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Προθεσμία</div>
+                                <div class="info-value">≈ Μέσα Μαΐου 2025</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Τύπος</div>
+                                <div class="info-value">Request for Information</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Φάση</div>
+                                <div class="info-value">Έρευνα Αγοράς</div>
+                            </div>
+                        </div>
+                        <div class="project-tech">
+                            <h4>Βασικές Τεχνικές Απαιτήσεις</h4>
+                            <ul>
+                                <li>Σύστημα εναέριας επιτήρησης με ακουστικούς αισθητήρες</li>
+                                <li>Έγκαιρος εντοπισμός και ταξινόμηση πιθανών απειλών</li>
+                                <li>Ανάπτυξη «ad hoc» συστήματος επιτήρησης</li>
+                                <li>Πολλαπλοί αισθητήρες και χρήση Τεχνητής Νοημοσύνης</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 04/2025: UAV Μεταφοράς Φορτίου -->
+                <div class="project" data-type="eoi">
+                    <div class="project-header type-eoi">
+                        <h3>04/2025: UAV Μεταφοράς Φορτίου</h3>
+                    </div>
+                    <div class="project-body">
+                        <div class="project-info">
+                            <div class="info-item">
+                                <div class="info-label">Προϋπολογισμός</div>
+                                <div class="info-value">24.000.000 €</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Προθεσμία</div>
+                                <div class="info-value">26/05/2025</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Τύπος</div>
+                                <div class="info-value">Εκδήλωση Ενδιαφέροντος</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">TRL</div>
+                                <div class="info-value">Από 4 σε 9</div>
+                            </div>
+                        </div>
+                        <div class="project-tech">
+                            <h4>Βασικές Τεχνικές Απαιτήσεις</h4>
+                            <ul>
+                                <li>Ανάπτυξη μη επανδρωμένου αεροσκάφους (UAV)</li>
+                                <li>Μεταφορά >100 kg φορτίου</li>
+                                <li>Εμβέλεια τουλάχιστον 350 km</li>
+                                <li>Δυνατότητα αυτόνομης/ημιαυτόνομης λειτουργίας</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Τεύχη Διαβούλευσης "IoT" & "ΜΕΟ" -->
+                <div class="project" data-type="consultation">
+                    <div class="project-header type-consultation">
+                        <h3>Διαβούλευση "IoT" & "ΜΕΟ"</h3>
+                    </div>
+                    <div class="project-body">
+                        <div class="project-info">
+                            <div class="info-item">
+                                <div class="info-label">Προθεσμία</div>
+                                <div class="info-value">Χωρίς συγκεκριμένη</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Τύπος</div>
+                                <div class="info-value">Ανοικτή Διαβούλευση</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Στόχος</div>
+                                <div class="info-value">Εθνικές Στρατηγικές</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Πλαίσιο</div>
+                                <div class="info-value">Ρυθμιστικό</div>
+                            </div>
+                        </div>
+                        <div class="project-tech">
+                            <h4>Περιγραφή</h4>
+                            <ul>
+                                <li>Εθνικές στρατηγικές</li>
+                                <li>Ολοκληρωμένο ρυθμιστικό πλαίσιο</li>
+                                <li>Διαβούλευση για "Internet of Things"</li>
+                                <li>Διαβούλευση για "Μη Επανδρωμένα Οχήματα"</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Details Tab -->
+        <div id="details" class="tab-content">
+            <div class="details-selector">
+                <select class="details-select" id="project-select" onchange="changeProject()">
+                    <option value="01-2025">01/2025: Μη Επανδρωμένα Θαλάσσια Σκάφη</option>
+                    <option value="02-2025">02/2025: Σύστημα Διαχείρισης Μάχης</option>
+                    <option value="03-2025">03/2025: Σύστημα Περιορισμού Υπερτάσεων</option>
+                    <option value="rfi-2025">RFI: Εναέρια & Θαλάσσια Επιτήρηση</option>
+                    <option value="04-2025">04/2025: UAV Μεταφοράς Φορτίου</option>
+                </select>
+            </div>
+            
+            <!-- 01/2025 Details -->
+            <div class="project-details" id="details-01-2025">
+                <div class="details-header">
+                    <h3>01/2025: Ανάπτυξη Αυτόνομων Συστημάτων – Μη Επανδρωμένα Θαλάσσια Σκάφη</h3>
+                </div>
+                <div class="details-section">
+                    <h4>Βασικές Πληροφορίες</h4>
+                    <div class="details-grid">
+                        <div class="details-item">
+                            <div class="details-label">Τύπος Διαδικασίας</div>
+                            <div>Εκδήλωση Ενδιαφέροντος (Ανταγωνιστικός Διάλογος)</div>
+                        </div>
+                        <div class="details-item">
+                            <div class="details-label">Προϋπολογισμός</div>
+                            <div>12.000.000 €</div>
+                        </div>
+                        <div class="details-item">
+                            <div class="details-label">Καταληκτική Ημερομηνία</div>
+                            <div>15/04/2025, 10:30</div>
+                        </div>
+                        <div class="details-item">
+                            <div class="details-label">Κωδικός Αναφοράς</div>
+                            <div>01/2025</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="details-section">
+                    <h4>Τεχνικές Απαιτήσεις</h4>
+                    <ul>
+                        <li>Κατασκευή δύο μη επανδρωμένων σκαφών επιφανείας (USVs)</li>
+                        <li>Υψηλή αυτονομία λειτουργίας</li>
+                        <li>Ταχύτητα έως 40–50 κόμβους</li>
+                        <li>Υβριδικό/ντίζελ σύστημα πρόωσης</li>
+                        <li>Αρθρωτή σχεδίαση για εναλλάξιμα φορτία</li>
+                        <li>Δυνατότητα επιχειρησιακής λειτουργίας σε ποικίλες συνθήκες</li>
+                    </ul>
+                </div>
+                <div class="details-section">
+                    <h4>Χρονοδιάγραμμα & Παραδοτέα</h4>
+                    <p>Το έργο περιλαμβάνει την κατασκευή δύο πλήρως λειτουργικών μη επανδρωμένων σκαφών επιφανείας με όλα τα απαιτούμενα υποσυστήματα και λογισμικό ελέγχου. Ο ανάδοχος θα πρέπει να παραδώσει επίσης πλήρη τεχνική τεκμηρίωση και να παράσχει εκπαίδευση στο προσωπικό χειρισμού και συντήρησης.</p>
+                </div>
+            </div>
+            
+            <!-- 02/2025 Details -->
+            <div class="project-details" id="details-02-2025" style="display: none;">
+                <div class="details-header">
+                    <h3>02/2025: Σύστημα Διαχείρισης Μάχης</h3>
+                </div>
+                <div class="details-section">
+                    <h4>Βασικές Πληροφορίες</h4>
+                    <div class="details-grid">
+                        <div class="details-item">
+                            <div class="details-label">Τύπος Διαδικασίας</div>
+                            <div>Εκδήλωση Ενδιαφέροντος (Ανταγωνιστικός Διάλογος)</div>
+                        </div>
+                        <div class="details-item">
+                            <div class="details-label">Προϋπολογισμός</div>
+                            <div>1.400.000 €</div>
+                        </div>
+                        <div class="details-item">
+                            <div class="details-label">Καταληκτική Ημερομηνία</div>
+                            <div>15/04/2025, 10:30</div>
+                        </div>
+                        <div class="details-item">
+                            <div class="details-label">TRL</div>
+                            <div>Από 5 σε 9</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="details-section">
+                    <h4>Τεχνικές Απαιτήσεις</h4>
+                    <ul>
+                        <li>Σχεδίαση/ανάπτυξη ολοκληρωμένου συστήματος ενοποίησης και διαχείρισης δεδομένων</li>
+                        <li>Διασύνδεση με αισθητήρες, όπλα, συστήματα επικοινωνίας</li>
+                        <li>Κατάλληλο για εγκατάσταση σε πολεμικά πλοία</li>
+                        <li>Παροχή ολοκληρωμένης επιχειρησιακής εικόνας</li>
+                        <li>Υποστήριξη λήψης αποφάσεων σε πραγματικό χρόνο</li>
+                    </ul>
+                </div>
+                <div class="details-section">
+                    <h4>Επίπεδο Τεχνολογικής Ετοιμότητας</h4>
+                    <p>Το ελάχιστο TRL εισόδου είναι 5, που σημαίνει ότι η προτεινόμενη τεχνολογία πρέπει ήδη να έχει επικυρωθεί σε σχετικό περιβάλλον. Το τελικό TRL θα πρέπει να είναι 9, δηλαδή πλήρως λειτουργικό σύστημα δοκιμασμένο σε επιχειρησιακό περιβάλλον.</p>
+                </div>
+            </div>
+            
+            <!-- 03/2025 Details -->
+            <div class="project-details" id="details-03-2025" style="display: none;">
+                <div class="details-header">
+                    <h3>03/2025: Ενεργό Σύστημα Περιορισμού Μεταβατικών Υπερτάσεων</h3>
+                </div>
+                <div class="details-section">
+                    <h4>Βασικές Πληροφορίες</h4>
+                    <div class="details-grid">
+                        <div class="details-item">
+                            <div class="details-label">Τύπος Διαδικασίας</div>
+                            <div>Εκδήλωση Ενδιαφέροντος (Ανταγωνιστικός Διάλογος)</div>
+                        </div>
+                        <div class="details-item">
+                            <div class="details-label">Προϋπολογισμός</div>
+                            <div>1.500.000 €</div>
+                        </div>
+                        <div class="details-item">
+                            <div class="details-label">Καταληκτική Ημερομηνία</div>
+                            <div>09/05/2025, 10:30</div>
+                        </div>
+                        <div class="details-item">
+                            <div class="details-label">TRL</div>
+                            <div>Από 5 σε 9</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="details-section">
+                    <h4>Τεχνικές Απαιτήσεις</h4>
+                    <ul>
+                        <li>Στόχος: προστασία ηλεκτρικού δικτύου πολεμικών πλοίων από κρουστικές και προσωρινές υπερτάσεις</li>
+                        <li>Ικανότητα άμεσης αντίδρασης σε απότομες μεταβολές τάσης</li>
+                        <li>Συμβατότητα με τα υπάρχοντα ηλεκτρικά συστήματα πλοίων</li>
+                        <li>Ανθεκτικότητα σε αντίξοες συνθήκες λειτουργίας</li>
+                    </ul>
+                </div>
+                <div class="details-section">
+                    <h4>Παραδοτέα</h4>
+                    <p>Πρόσκτηση τριών προβιομηχανικών πρωτοτύπων για εγκατάσταση σε διάφορους τύπους πλοίων. Τα πρωτότυπα θα πρέπει να συνοδεύονται από πλήρη τεχνική τεκμηρίωση και να υποστηρίζονται από ολοκληρωμένο πρόγραμμα δοκιμών και αξιολόγησης.</p>
+                </div>
+            </div>
+            
+            <!-- RFI Details -->
+            <div class="project-details" id="details-rfi-2025" style="display: none;">
+                <div class="details-header">
+                    <h3>RFI: Συστήματα Εναέριας & Θαλάσσιας Επιτήρησης</h3>
+                </div>
+                <div class="details-section">
+                    <h4>Βασικές Πληροφορίες</h4>
+                    <div class="details-grid">
+                        <div class="details-item">
+                            <div class="details-label">Τύπος Διαδικασίας</div>
+                            <div>Προκαταρκτικές Διαβουλεύσεις (01/2025 & 02/2025)</div>
+                        </div>
+                        <div class="details-item">
+                            <div class="details-label">Προθεσμία</div>
+                            <div>≈ Αρχές/Μέσα Μαΐου 2025</div>
+                        </div>
+                        <div class="details-item">
+                            <div class="details-label">Φάση</div>
+                            <div>Έρευνα Αγοράς</div>
+                        </div>
+                        <div class="details-item">
+                            <div class="details-label">Στόχος</div>
+                            <div>Συλλογή τεχνικών πληροφοριών και λύσεων</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="details-section">
+                    <h4>Περιγραφή Έργων</h4>
+                    <p><strong>Έργο 1:</strong> Εστιάζει σε σύστημα εναέριας επιτήρησης με ακουστικούς αισθητήρες για τον έγκαιρο εντοπισμό και ταξινόμηση πιθανών απειλών (π.χ. drones).</p>
+                    <p><strong>Έργο 2:</strong> Εστιάζει στην ανάπτυξη «ad hoc» αναπτυσσόμενου συστήματος θαλάσσιας/εναέριας επιτήρησης με πολλαπλούς αισθητήρες, ευέλικτη ανάπτυξη και Τεχνητή Νοημοσύνη.</p>
+                </div>
+                <div class="details-section">
+                    <h4>Στόχοι RFI</h4>
+                    <ul>
+                        <li>Διερεύνηση διαθέσιμων τεχνολογιών και λύσεων</li>
+                        <li>Κατανόηση των δυνατοτήτων της αγοράς</li>
+                        <li>Συλλογή πληροφοριών για το σχεδιασμό μελλοντικών διαγωνισμών</li>
+                        <li>Ενημέρωση δυνητικών προμηθευτών για τις απαιτήσεις</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- 04/2025 Details -->
+            <div class="project-details" id="details-04-2025" style="display: none;">
+                <div class="details-header">
+                    <h3>04/2025: Μη Επανδρωμένο Αεροσκάφος Μεταφοράς Φορτίου</h3>
+                </div>
+                <div class="details-section">
+                    <h4>Βασικές Πληροφορίες</h4>
+                    <div class="details-grid">
+                        <div class="details-item">
+                            <div class="details-label">Τύπος Διαδικασίας</div>
+                            <div>Εκδήλωση Ενδιαφέροντος (Ανταγωνιστικός Διάλογος)</div>
+                        </div>
+                        <div class="details-item">
+                            <div class="details-label">Προϋπολογισμός</div>
+                            <div>24.000.000 €</div>
+                        </div>
+                        <div class="details-item">
+                            <div class="details-label">Καταληκτική Ημερομηνία</div>
+                            <div>26/05/2025, 10:30</div>
+                        </div>
+                        <div class="details-item">
+                            <div class="details-label">TRL</div>
+                            <div>Από 4 σε 9</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="details-section">
+                    <h4>Τεχνικές Απαιτήσεις</h4>
+                    <ul>
+                        <li>Ανάπτυξη UAV με δυνατότητα μεταφοράς φορτίου βάρους >100 kg</li>
+                        <li>Εμβέλεια τουλάχιστον 350 km</li>
+                        <li>Δυνατότητα αυτόνομης/ημιαυτόνομης λειτουργίας</li>
+                        <li>Προσαρμοστικότητα σε διαφορετικούς τύπους αποστολών</li>
+                        <li>Ανθεκτικότητα σε ποικίλες καιρικές συνθήκες</li>
+                    </ul>
+                </div>
+                <div class="details-section">
+                    <h4>Επίπεδο Τεχνολογικής Ετοιμότητας</h4>
+                    <p>Το ελάχιστο TRL εισόδου είναι 4, που σημαίνει ότι βασικά στοιχεία της τεχνολογίας έχουν επικυρωθεί σε εργαστηριακό περιβάλλον. Το τελικό TRL θα πρέπει να είναι 9, δηλαδή πλήρως λειτουργικό σύστημα δοκιμασμένο σε επιχειρησιακό περιβάλλον.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Simple tab navigation
+        function openTab(tabName) {
+            // Hide all tab content
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].style.display = 'none';
+            }
+            
+            // Deactivate all tabs
+            const tabs = document.getElementsByClassName('tab');
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].className = tabs[i].className.replace(' active', '');
+            }
+            
+            // Show the selected tab content
+            document.getElementById(tabName).style.display = 'block';
+            
+            // Activate the selected tab
+            for (let i = 0; i < tabs.length; i++) {
+                if (tabs[i].getAttribute('onclick').includes(tabName)) {
+                    tabs[i].className += ' active';
+                }
+            }
+        }
+        
+        // Project filtering
+        function filterProjects(type) {
+            // Update active filter button
+            const filterButtons = document.getElementsByClassName('filter-btn');
+            for (let i = 0; i < filterButtons.length; i++) {
+                filterButtons[i].className = filterButtons[i].className.replace(' active', '');
+                if (filterButtons[i].getAttribute('onclick').includes(type)) {
+                    filterButtons[i].className += ' active';
+                }
+            }
+            
+            // Filter projects
+            const projects = document.getElementsByClassName('project');
+            for (let i = 0; i < projects.length; i++) {
+                if (type === 'all' || projects[i].getAttribute('data-type') === type) {
+                    projects[i].style.display = 'block';
+                } else {
+                    projects[i].style.display = 'none';
+                }
+            }
+        }
+        
+        // Project details navigation
+        function changeProject() {
+            const select = document.getElementById('project-select');
+            const selectedValue = select.value;
+            
+            // Hide all project details
+            const projectDetails = document.getElementsByClassName('project-details');
+            for (let i = 0; i < projectDetails.length; i++) {
+                projectDetails[i].style.display = 'none';
+            }
+            
+            // Show selected project details
+            document.getElementById('details-' + selectedValue).style.display = 'block';
+        }
+        
+        // Show project details directly from timeline
+        function showProjectDetails(projectId) {
+            // Switch to details tab
+            openTab('details');
+            
+            // Select and show the project details
+            const select = document.getElementById('project-select');
+            select.value = projectId;
+            changeProject();
+        }
+    </script>
+</body>
+</html>
